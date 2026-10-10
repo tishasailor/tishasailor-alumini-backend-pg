@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Management System</title>
+<style>
+:root{--blue:#3267f6;--blue-dark:#214ed0;--red:#e5484d;--purple:#7b2cbf;--bg:#f4f6fb;--line:#e5eaf2;--text:#172033;--muted:#64748b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif;color:var(--text)}.page{max-width:1250px;margin:28px auto;padding:0 18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}h1{font-size:28px;margin:0 0 6px}h2{font-size:20px;margin:0 0 18px}.subtitle{color:var(--muted);margin:0}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:20px;box-shadow:0 5px 18px #24324a0a}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn{border:0;border-radius:8px;padding:10px 14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px}.btn:disabled{opacity:.55;cursor:not-allowed}.primary{background:var(--blue);color:#fff}.primary:hover{background:var(--blue-dark)}.light{background:#eef2ff;color:#244cc5}.danger{background:var(--red);color:white}.muted{background:#edf0f5;color:#334155}.green{background:#138a58;color:#fff}.small{padding:7px 10px;font-size:13px}.form-card{border:1px solid var(--line);border-radius:12px;padding:18px;margin:14px 0;background:#fcfdff}.form-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.form-card-head h3{margin:0;font-size:16px}.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.field label{display:block;font-size:12px;font-weight:700;margin:0 0 6px;color:#475569}.field input,.field select,.search{width:100%;border:1px solid #d9e0eb;border-radius:7px;padding:10px 11px;background:#fff;font:inherit;min-width:0}.field input:focus,.field select:focus,.search:focus{outline:2px solid #c8d6ff;border-color:var(--blue)}.form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.message{padding:11px 13px;border-radius:8px;margin:14px 0;display:none}.message.success{display:block;background:#eaf8f0;color:#146c43}.message.error{display:block;background:#fff0f0;color:#b4232b}.list-head{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap;margin-bottom:15px}.list-head h2{margin:0}.search{max-width:360px}.selectionbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:12px 0 16px}.count{color:var(--blue);font-size:13px;font-weight:700}.employee-list{display:grid;gap:12px}.employee{display:grid;grid-template-columns:24px 58px minmax(0,1fr) auto;gap:13px;align-items:center;border:1px solid var(--line);border-radius:11px;padding:14px;background:#fff}.employee input[type=checkbox]{width:17px;height:17px;cursor:pointer}.avatar{width:54px;height:54px;border-radius:50%;object-fit:cover;background:#edf1f7;border:1px solid var(--line)}.employee-info{min-width:0}.employee-name{font-weight:750;margin-bottom:7px}.employee-meta{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12px}.employee-meta strong{color:#334155}.employee-actions{display:flex;gap:7px}.icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid #b7c9ff;background:#fff;color:var(--blue);font-size:17px;cursor:pointer}.icon-btn.delete{border-color:#ffc0c2;color:var(--red)}.tag{display:inline-block;border-radius:20px;padding:4px 9px;background:#eef3ff;color:#2856ca;font-size:11px;font-weight:700;margin-left:8px}.empty{text-align:center;padding:28px;color:var(--muted)}.bulk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:15px}.hidden{display:none!important}.hint{font-size:12px;color:var(--muted);margin-top:8px}.photo-preview{width:38px;height:38px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-left:8px}
+@media(max-width:800px){.fields,.bulk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.employee{grid-template-columns:22px 48px minmax(0,1fr)}.avatar{width:46px;height:46px}.employee-actions{grid-column:3;justify-self:start}.employee-meta{gap:8px}}
+@media(max-width:520px){.fields,.bulk-grid{grid-template-columns:1fr}.panel{padding:15px}.employee{gap:8px;padding:10px}.employee-meta{display:grid;gap:5px}.top h1{font-size:23px}}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="top">
+    <div><h1>Employee Management</h1><p class="subtitle">Register, search, update and manage employees.</p></div>
+    <div class="toolbar"><button class="btn primary" id="openAddBtn">＋ Add Employee</button><button class="btn light" id="showBtn">↻ Refresh</button></div>
+  </header>
+
+  <section class="panel hidden" id="addPanel">
+    <div class="list-head"><div><h2>Add Employees</h2><p class="subtitle">Add one or more forms, then insert them together.</p></div><button class="btn muted small" id="closeAddBtn">Close</button></div>
+    <form id="bulkInsertForm">
+      <div id="newEmployeeForms"></div>
+      <div class="form-actions"><button type="button" class="btn light" id="addAnotherBtn">＋ Add Another Employee</button><button type="submit" class="btn primary" id="insertAllBtn">Insert All Employees</button></div>
+      <p class="hint">Employee ID and email must be unique. Password and confirm password must match.</p>
+    </form>
+  </section>
+
+  <section class="panel hidden" id="editPanel">
+    <div class="list-head"><div><h2 id="editHeading">Update Employee</h2><p class="subtitle">Edit the selected employee's information.</p></div><button class="btn muted small" id="cancelEditBtn">Cancel</button></div>
+    <form id="editForm"><div id="editFields" class="fields"></div><div class="form-actions"><button class="btn primary" type="submit">Save Changes</button><button class="btn muted" type="button" id="cancelEditBtn2">Cancel</button></div></form>
+  </section>
+
+  <div id="message" class="message" role="status"></div>
+
+  <section class="panel">
+    <div class="list-head"><h2>All Employees</h2><input class="search" id="searchInput" type="search" placeholder="Search by ID, name, email or department..."></div>
+    <div class="selectionbar">
+      <label><input type="checkbox" id="selectAll"> Select All</label>
+      <span class="count" id="selectedCount">0 selected</span>
+      <span style="flex:1"></span>
+      <button class="btn primary small" id="bulkUpdateBtn" disabled>✎ Bulk Update</button>
+      <button class="btn danger small" id="bulkDeleteBtn" disabled>▣ Bulk Delete</button>
+    </div>
+    <section id="bulkUpdatePanel" class="form-card hidden">
+      <h3>Bulk Update Selected Employees</h3>
+      <p class="hint">Only the fields you fill in will be changed for every selected employee.</p>
+      <form id="bulkUpdateForm">
+        <div class="bulk-grid">
+          <div class="field"><label for="bulkDepartment">Department</label><select id="bulkDepartment"><option value="">No change</option><option>IT</option><option>HR</option><option>Finance</option><option>Marketing</option><option>Engineering</option><option>Sales</option><option>Operations</option></select></div>
+          <div class="field"><label for="bulkDesignation">Designation</label><input id="bulkDesignation" placeholder="No change"></div>
+          <div class="field"><label for="bulkEmploymentType">Employment Type</label><select id="bulkEmploymentType"><option value="">No change</option><option>Full-Time</option><option>Part-Time</option><option>Contract</option><option>Intern</option></select></div>
+          <div class="field"><label for="bulkGender">Gender</label><select id="bulkGender"><option value="">No change</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+        </div>
+        <div class="form-actions"><button class="btn primary" type="submit">Apply to Selected</button><button class="btn muted" type="button" id="cancelBulkUpdateBtn">Cancel</button></div>
+      </form>
+    </section>
+    <div id="output" class="employee-list"><div class="empty">Loading employees...</div></div>
+  </section>
+</main>
+
+<template id="employeeTemplate">
+  <div class="form-card employee-entry">
+    <div class="form-card-head"><h3>Employee <span class="entry-number"></span></h3><button type="button" class="btn danger small remove-entry">Remove</button></div>
+    <div class="fields">
+      <div class="field"><label>Employee Name *</label><input data-field="employeeName" required maxlength="100"></div>
+      <div class="field"><label>Employee ID *</label><input data-field="employeeId" required placeholder="Example: EMP003"></div>
+      <div class="field"><label>Email Address *</label><input data-field="email" type="email" required></div>
+      <div class="field"><label>Mobile Number *</label><input data-field="mobile" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" required placeholder="10 digits"></div>
+      <div class="field"><label>Password *</label><input data-field="password" type="password" required minlength="1" autocomplete="new-password"></div>
+      <div class="field"><label>Confirm Password *</label><input data-field="confirmPassword" type="password" required autocomplete="new-password"></div>
+      <div class="field"><label>Gender *</label><select data-field="gender" required><option value="">Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+      <div class="field"><label>Date of Birth *</label><input data-field="dateOfBirth" type="date" required></div>
+      <div class="field"><label>Department *</label><select data-field="department" required><option value="">Select Department</option><option>IT</option><option>HR</option><option>Finance</option><option>Marketing</option><option>Engineering</option><option>Sales</option><option>Operations</option></select></div>
+      <div class="field"><label>Designation *</label><input data-field="designation" required></div>
+      <div class="field"><label>Date of Joining *</label><input data-field="dateOfJoining" type="date" required></div>
+      <div class="field"><label>Employment Type *</label><select data-field="employmentType" required><option value="">Select Employment Type</option><option>Full-Time</option><option>Part-Time</option><option>Contract</option><option>Intern</option></select></div>
+      <div class="field"><label>Profile Photo (optional)</label><input data-field="profilePhotoFile" type="file" accept="image/*"></div>
+    </div>
+  </div>
+</template>
+<script src="script.js"></script>
+</body>
+</html>
